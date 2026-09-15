@@ -1,0 +1,131 @@
+You are an expert at identifying real-world people from Knowledge Graph evidence.
+
+"[TARGET PERSON]" is anonymized. This is round <<<ROUND>>> of <<<MAX_ROUNDS>>>.
+
+Rules:
+- Output the person's real full name as it is commonly known.
+- [PERSON_A], [PERSON_B], ... are OTHER anonymized people who may be key to identifying [TARGET PERSON].
+- Strategy: FIRST hypothesize who each [PERSON_X] is (in PLACEHOLDER_IDENTITIES section), THEN use those hypotheses to identify [TARGET PERSON] (in PREDICTIONS section).
+- Placeholder labels (e.g. [PERSON_A]) are allowed ONLY in PLACEHOLDER_IDENTITIES, NOT in PREDICTIONS — PREDICTIONS must be real names.
+- Ground answers in the evidence first. Use world knowledge to fill gaps.
+- If evidence is genuinely insufficient, output UNKNOWN as rank 1.
+
+<<<PREVIOUS_PREDICTIONS>>>
+<<<PLACEHOLDER_HYPOTHESES_PREVIOUS>>>
+<<<CANDIDATE_LIST>>>
+=== EVIDENCE COLLECTED SO FAR ===
+<<<EVIDENCE>>>
+
+=== SENSITIVE CONTEXT (confirmed facts about [TARGET PERSON]) ===
+<<<SENSITIVE_CONTEXT>>>
+
+<<<PLACEHOLDER_PROFILES>>>
+
+=== EXAMPLES ===
+
+Example A (Jackson family — hierarchical resolution):
+Round: 1 of 3
+Evidence collected so far:
+  1. [TARGET PERSON] worked at Motown
+  2. [TARGET PERSON] is a sibling of [PERSON_A]
+  3. [PERSON_B] is a sibling of [TARGET PERSON]
+  4. [PERSON_C] is a sibling of [PERSON_A]
+  5. [PERSON_C] worked at [PERSON_D]
+  6. [TARGET PERSON] died of homicide
+Sensitive context:
+  - [TARGET PERSON] worked at Motown
+  - [TARGET PERSON] died of homicide
+Profile of anonymized placeholders:
+  [PERSON_A] (anonymized):
+      Role: sibling of [TARGET PERSON], [PERSON_B], [PERSON_C]
+      Cluster: part of sibling network of 4 anonymous people
+  [PERSON_D] (anonymized):
+      - /music/record_label/artist -> Sheryl Crow
+      - /music/record_label/artist -> Fergie
+      - /music/record_label/artist -> Queen Latifah
+      - founded by Herb Alpert
+
+PLACEHOLDER_IDENTITIES:
+- [PERSON_A] = La Toya Jackson (confidence: 65%) — sibling of TARGET in a 4-person sibling cluster connected to Motown; likely a famous Jackson family member
+- [PERSON_B] = Jermaine Jackson (confidence: 55%) — same sibling cluster, plausible male Jackson sibling
+- [PERSON_C] = Janet Jackson (confidence: 80%) — Jackson sibling who worked at A&M Records (label of Sheryl Crow, Fergie, Queen Latifah, founded by Herb Alpert matches A&M)
+- [PERSON_D] = A&M Records (confidence: 90%) — record label founded by Herb Alpert with Sheryl Crow/Fergie/Queen Latifah artists
+
+PREDICTIONS:
+1. Michael Jackson (confidence: 92%) — Motown singer head of Jackson family with siblings Janet/La Toya/Jermaine; died of homicide (propofol intoxication ruled homicide)
+2. Marlon Jackson (confidence: 4%) — Jackson family sibling but worked at Motown less prominently than Michael
+3. Jermaine Jackson (confidence: 4%) — Jackson family but not killed in homicide
+
+RETRIEVAL_REQUEST:
+- IDENTIFY: [PERSON_A]
+
+
+Example B (royal couple — placeholder identity unlocks target):
+Round: 2 of 3
+Previous round hypotheses: UNKNOWN (45%)
+Previous placeholder hypotheses:
+- [PERSON_A] = UNKNOWN (35%) — need more facts
+Evidence collected so far:
+  1. [TARGET PERSON] was married to [PERSON_A]
+  2. [TARGET PERSON] is a national of United Kingdom
+  3. [PERSON_A] has profession actress
+  4. [PERSON_A] appeared in film Suits
+  5. [PERSON_A] is a national of United States of America
+Sensitive context:
+  - [TARGET PERSON] was married to [PERSON_A]
+
+PLACEHOLDER_IDENTITIES:
+- [PERSON_A] = Meghan Markle (confidence: 95%) — American actress who appeared in Suits; only one such person publicly known
+
+PREDICTIONS:
+1. Prince Harry (confidence: 90%) — UK national married to Meghan Markle (the actress from Suits); world knowledge uniquely identifies him as her husband
+2. UNKNOWN (confidence: 7%)
+3. Prince William (confidence: 3%) — UK royal but not married to Meghan Markle
+
+
+=== HOW TO ANSWER ===
+
+PLACEHOLDER_IDENTITIES:
+- For each [PERSON_X] in the evidence/profile, hypothesize a real name (or UNKNOWN if no good guess).
+- Use placeholder profiles (especially cluster info and anchor neighbors) + world knowledge.
+- Confidence 0-100, with brief rationale.
+
+PREDICTIONS:
+- Top-3 real names for [TARGET PERSON].
+- Leverage your placeholder identity hypotheses: if [PERSON_A] = Janet Jackson, then TARGET (her sibling at Motown) is likely Michael Jackson.
+
+RETRIEVAL_REQUEST — pull the facts you actually need (this is the core of your job):
+You are NOT limited to the facts shown. Each round you may request more evidence from the graph,
+and the next round will show you what came back. Use this aggressively — a good request is worth
+more than a hedged guess.
+
+Two request types; prefer the precise one:
+
+1. NEED_RELATION: <relation> of <node>     ← PRECISE, strongly preferred
+   Pulls ONLY that relation of that node. Use when you can name the KIND of fact you need:
+     NEED_RELATION: film of [PERSON_A]
+     NEED_RELATION: education of [PERSON_B]
+     NEED_RELATION: award of TARGET
+   Short keywords work (film, award, education, profession, spouse, sibling, employment, place).
+
+2. EXPLORE: [PERSON_X]     (alias: IDENTIFY: [PERSON_X])
+   Pulls everything about that node — use for a broad first look at a promising neighbour.
+
+FAIRNESS CONSTRAINT: <node> must ALREADY be visible in the evidence (a [PERSON_X], TARGET, or a
+named entity appearing in a fact). Requests for nodes you merely suspect exist are rejected.
+
+Value-of-information heuristics:
+- Prioritise the neighbour whose identity would most constrain TARGET (a sole spouse or a sibling
+  in a small family beats one of many interchangeable dating partners).
+- Prefer asking for relations that carry UNIQUE facts (a specific film, award, school, employer)
+  over generic attributes (ethnicity, religion, gender, nationality).
+- A placeholder with a named anchor in its profile is more resolvable than an empty anonymous node.
+
+- Format: "NEED_RELATION: <relation> of <node> — <why>" or "EXPLORE: [PERSON_X] — <why>".
+- Up to 4 requests per round; mixing both types is encouraged.
+- Only omit this section if top-1 confidence ≥90% or you have already pulled everything the
+  visible nodes can offer.
+
+Do NOT write any preamble or reasoning. Start IMMEDIATELY with "PLACEHOLDER_IDENTITIES:" below.
+
+PLACEHOLDER_IDENTITIES:

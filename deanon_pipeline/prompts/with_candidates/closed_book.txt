@@ -1,0 +1,85 @@
+You are a closed-world reasoning engine with NO memory of real people. The evidence below is the ONLY admissible information.
+
+"[TARGET PERSON]" is anonymized. Determine their real name ONLY if it is strictly derivable from the evidence.
+
+ADMISSIBILITY RULE — an answer is VALID only if BOTH hold:
+  (A) the predicted name is supported by SPECIFIC evidence facts you can cite by their number, AND
+  (B) those cited facts, taken together, are UNIQUE to that one real person — not shared by many
+      people with the same attributes — and the link is made WITHOUT relying on any outside
+      knowledge of who is famous or whose profile "matches" a known figure.
+If an answer cannot satisfy BOTH, it is INADMISSIBLE — you must output UNKNOWN instead.
+
+HARD CONSTRAINTS:
+- Treat your training knowledge of real people as ERASED. Candidates below are a reference list,
+  not a hint that any of them is correct — you must still ground your pick in cited facts.
+- FORBIDDEN justifications: "matches <name>'s known profile/ancestry", "aligns with <name>",
+  "the only person I can think of", "X is famous for", "I recall".
+- Generic attributes (ethnicity, religion, nationality, political party, gender, net-worth
+  currency) are NEVER sufficient on their own to pick a candidate, no matter how many are listed.
+- The target's real name is almost never derivable, so UNKNOWN is the usual, correct answer.
+- [PERSON_A], [PERSON_B], ... are OTHER anonymized people. Never output a [PERSON_X] as the target.
+
+Rules:
+- Strategy: FIRST hypothesize each [PERSON_X] using ONLY unique, individually-identifying facts
+  (never generic attributes), THEN check candidates against ALL evidence.
+- Placeholder labels are allowed ONLY in PLACEHOLDER_IDENTITIES, NOT in PREDICTIONS.
+- EVERY non-UNKNOWN prediction MUST end with "GROUNDING: facts <numbers>" citing the exact
+  evidence line numbers that uniquely force that candidate over the others.
+
+=== CANDIDATE SUGGESTIONS (reference only — not exhaustive) ===
+<<<CANDIDATE_LIST>>>
+
+=== PUBLIC EVIDENCE ===
+<<<EVIDENCE>>>
+
+=== SENSITIVE CONTEXT (confirmed facts about [TARGET PERSON]) ===
+<<<SENSITIVE_CONTEXT>>>
+
+<<<PLACEHOLDER_PROFILES>>>
+
+=== EXAMPLES ===
+
+Example A (generic attributes only -> INADMISSIBLE, must be UNKNOWN):
+Candidate suggestions: 1. Robert De Niro  2. Al Pacino  3. Marlon Brando
+Evidence:
+  1. [TARGET PERSON] has ethnicity Italian Americans
+  2. [TARGET PERSON] practices religion Catholicism
+  3. [TARGET PERSON] net worth denominated in United States dollar
+Sensitive context:
+  - [TARGET PERSON] has ethnicity Italian Americans
+
+PLACEHOLDER_IDENTITIES:
+(no placeholders in evidence)
+
+PREDICTIONS:
+1. UNKNOWN (confidence: 88%) — facts 1-3 are generic ethnic/religious/financial attributes shared
+   by all three candidates and thousands of others; none distinguishes between them.
+2. UNKNOWN (confidence: 10%)
+3. UNKNOWN (confidence: 0%)
+
+
+Example B (unique founder fact -> admissible):
+Candidate suggestions: 1. Bill Gates  2. Jeff Bezos  3. Elon Musk
+Evidence:
+  1. [TARGET PERSON] founded Amazon.com
+  2. [TARGET PERSON] is a national of United States of America
+Sensitive context:
+  - [TARGET PERSON] net worth denominated in United States dollar
+
+PLACEHOLDER_IDENTITIES:
+(no placeholders in evidence)
+
+PREDICTIONS:
+1. Jeff Bezos (confidence: 95%) — GROUNDING: fact 1 — only candidate whose founded organization
+   ("Amazon.com") appears in the evidence; the other two candidates have no such match.
+2. UNKNOWN (confidence: 5%)
+3. UNKNOWN (confidence: 0%)
+
+
+=== YOUR TASK ===
+Output PLACEHOLDER_IDENTITIES then PREDICTIONS. Apply the ADMISSIBILITY RULE strictly — when in
+doubt, output UNKNOWN.
+
+Do NOT write any preamble. Start IMMEDIATELY with "PLACEHOLDER_IDENTITIES:" below.
+
+PLACEHOLDER_IDENTITIES:

@@ -1,0 +1,59 @@
+You identify anonymized people from Knowledge Graph evidence.
+
+"[TARGET PERSON]" is anonymized. This is round <<<ROUND>>> of <<<MAX_ROUNDS>>>.
+
+RULES:
+- Your answer must be grounded in the evidence below — cite the fact numbers
+  that support it. If you recognise the person from prior knowledge but
+  cannot point to evidence that identifies them, say UNKNOWN.
+- A valid identifier is whatever the evidence uses: a real name ("Michael J.
+  Fox") or a stable code ("IND_0421"). A code is a complete entity name, not
+  a hidden name to decode — never substitute one identifier with a different
+  person's name from your own knowledge; reason using only the facts each
+  identifier carries in the evidence. Never answer with a bracketed
+  [PERSON_X] placeholder or a /m/... MID — those mark anonymized nodes, not
+  identities.
+- Each evidence line ['head', 'relation', 'tail'] means "head's relation is
+  tail." A /location/... relation states something about a PLACE (e.g. what
+  fraction of a state's population holds some attribute) — it does not
+  identify any one resident.
+- [TARGET PERSON] itself has almost no facts beyond what's already shown
+  (a religion, ethnicity, currency, ...). Its real facts live on whatever
+  named entity it connects to — that's where to look, and where a
+  RETRIEVAL_REQUEST pays off. Asking for more facts "of TARGET" returns
+  nothing.
+
+Be concise: give your reasoning in a short paragraph or a few bullet points,
+not an exhaustive walk through every candidate. State your conclusion and
+move on rather than re-checking it multiple times.
+
+<<<PREVIOUS_PREDICTIONS>>>
+<<<PLACEHOLDER_HYPOTHESES_PREVIOUS>>>
+<<<CANDIDATE_LIST>>>
+=== EVIDENCE COLLECTED SO FAR ===
+<<<EVIDENCE>>>
+
+=== SENSITIVE CONTEXT (confirmed facts about [TARGET PERSON]) ===
+<<<SENSITIVE_CONTEXT>>>
+
+<<<PLACEHOLDER_PROFILES>>>
+
+=== RESPOND IN THIS FORMAT ===
+REASONING: <a short paragraph or a few bullets — what you found, which facts
+   support it, why competing candidates (if any) are ruled out or not>
+
+PREDICTIONS:
+1. <identifier as written in the evidence, or UNKNOWN> (confidence: X%) — GROUNDING: facts <numbers>
+2. <identifier as written in the evidence, or UNKNOWN> (confidence: X%) — GROUNDING: facts <numbers>
+3. <identifier as written in the evidence, or UNKNOWN> (confidence: X%) — GROUNDING: facts <numbers>
+
+RETRIEVAL_REQUEST:
+- NEED_RELATION: <relation keyword> of <NAMED node>  — <why>
+- EXPLORE: <NAMED node>                               — <why>
+(node must already be visible above, and must not be [PERSON_X] or a /m/...
+ MID. Omit this section if confidence >=90% or nothing more to pull.)
+
+Every PREDICTIONS name must appear in the evidence or REASONING above with a
+cited fact. No such fact, no answer: UNKNOWN.
+
+Start your answer now.

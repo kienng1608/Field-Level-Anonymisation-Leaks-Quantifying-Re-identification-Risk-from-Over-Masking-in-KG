@@ -1,0 +1,65 @@
+You are helping de-anonymize a single anonymized person in a Freebase knowledge graph.
+The person is given as a Freebase MID such as /m/0xxxx; their real name is hidden.
+
+You will be given:
+  (a) Known sensitive context about the anonymized person (already in the graph).
+  (b) A candidate set of Freebase relation paths attached to that person or to the
+      context entities.
+
+Your job: pick the top <<<TOP_K>>> relations from the candidate set that are MOST
+USEFUL for narrowing down WHO this person is (i.e., distinguishing them from other
+people in the same graph).
+
+Heuristics:
+  - PREFER selective relations whose tail is usually unique to one person:
+    e.g., /people/person/place_of_birth, /people/person/profession,
+    /people/person/education..., /film/actor/film, /award/award_winner/awards_won...,
+    /music/artist/genre, /music/group_member/membership..., /sports/pro_athlete/teams...,
+    /people/deceased_person/place_of_death, /tv/tv_actor/starring_roles...
+  - DEPRIORITIZE relations whose tail is generic / shared by thousands:
+    e.g., /location/country/currency_used, /education/educational_institution/students...,
+    anything containing currency / gdp / tuition / net_worth / box_office /
+    operating_income / revenue / category / webpage / topic_equivalent_topic.
+  - The output MUST be a Python list of strings, each string copied EXACTLY from the
+    candidate set. Do not invent new relations.
+
+Examples)
+
+Example 1
+Context: anonymized person — /people/person/employment_history -> Motown Records;
+         /people/person/sibling_s -> [ANOTHER ANONYMIZED PERSON]
+Words set: ['/music/artist/genre', '/people/person/profession', '/people/person/place_of_birth',
+            '/location/country/currency_used', '/award/award_winner/awards_won./award/award_honor/award',
+            '/film/actor/film./film/performance/film']
+Top 4 Answer: ['/people/person/profession', '/music/artist/genre', '/people/person/place_of_birth', '/award/award_winner/awards_won./award/award_honor/award']
+
+Example 2
+Context: anonymized person — /people/cause_of_death/people <- Drug overdose
+Words set: ['/people/person/profession', '/film/actor/film./film/performance/film',
+            '/base/popstra/celebrity/dated./base/popstra/dated/participant',
+            '/location/country/gdp_nominal', '/people/person/place_of_birth',
+            '/award/award_winner/awards_won./award/award_honor/award']
+Top 4 Answer: ['/people/person/profession', '/film/actor/film./film/performance/film', '/award/award_winner/awards_won./award/award_honor/award', '/people/person/place_of_birth']
+
+Example 3
+Context: anonymized person — /people/person/spouse_s -> [SPOUSE]; spouse is married
+         to /m/0xyz at /people/marriage/location_of_ceremony -> Las Vegas
+Words set: ['/people/person/profession', '/film/actor/film./film/performance/film',
+            '/sports/pro_athlete/teams./sports/sports_team_roster/team',
+            '/people/person/place_of_birth', '/location/country/currency_used',
+            '/business/business_operation/industry']
+Top 4 Answer: ['/people/person/profession', '/film/actor/film./film/performance/film', '/people/person/place_of_birth', '/sports/pro_athlete/teams./sports/sports_team_roster/team']
+
+Example 4
+Context: anonymized person — /medicine/disease/notable_people_with_this_condition <- Dyslexia
+Words set: ['/film/actor/film./film/performance/film', '/people/person/profession',
+            '/award/award_nominee/award_nominations./award/award_nomination/award',
+            '/film/director/film', '/location/location/contains',
+            '/business/business_operation/operating_income./measurement_unit/dated_money_value/currency']
+Top 5 Answer: ['/people/person/profession', '/film/actor/film./film/performance/film', '/film/director/film', '/award/award_nominee/award_nominations./award/award_nomination/award', '/location/location/contains']
+
+Now solve this case.
+Target MID: <<<TARGET_MID>>>
+Context: <<<CONTEXT>>>
+Words set: <<<RELATION_SET>>>
+Top <<<TOP_K>>> Answer:

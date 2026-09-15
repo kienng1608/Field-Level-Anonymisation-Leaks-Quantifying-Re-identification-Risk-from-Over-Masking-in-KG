@@ -1,0 +1,48 @@
+# ============================================================
+# Secrets — NEVER commit
+# ============================================================
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# ============================================================
+# Re-identification answer keys — NEVER commit
+# ------------------------------------------------------------
+# *_KEY.json maps each IND_##### pseudonym back to the real
+# person it stands for. Publishing one would undo the
+# pseudonymisation this repository exists to study, and would
+# disclose the identities behind the worked example in the
+# paper. Build these locally with corpus/step1_names_to_id.py.
+# ============================================================
+*_KEY.json
+data/
+corpora/
+
+# ============================================================
+# Attack outputs — may contain solved targets
+# ============================================================
+results/
+logs/
+outputs/
+*.jsonl
+
+# ============================================================
+# Python
+# ============================================================
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ============================================================
+# Editors / OS
+# ============================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
