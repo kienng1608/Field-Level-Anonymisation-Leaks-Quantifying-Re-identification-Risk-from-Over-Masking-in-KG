@@ -125,6 +125,7 @@ done
 | Weighted Anchor's two factors separated | `analysis/weighted_anchor_factors.py` |
 | Hits resting on a node created by merging same-named entities | `analysis/label_merge_hits.py` |
 | Rebuilding the release without the net-worth relation | `analysis/net_worth_sensitivity.py` |
+| Whether the retrieved evidence forces each agent hit | `analysis/evidence_forced.py` |
 
 The equal-evidence scripts replay the stored agent runs, so they need the agent's
 results in `deanon_results/`.
