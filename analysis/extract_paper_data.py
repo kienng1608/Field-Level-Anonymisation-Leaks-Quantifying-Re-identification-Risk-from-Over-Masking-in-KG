@@ -57,12 +57,22 @@ RUNS = [
 
 
 def run_is_available(graph_dir, prefix):
-    """True when the leaked graph and at least one result batch are on disk."""
+    """True when the leaked graph and a COMPLETE set of result batches are on disk.
+
+    A run writes <prefix><i>.partial.json while it is still going and
+    <prefix><i>.json when that batch finishes. Accepting a partial file here
+    (as this used to) silently admits an unfinished run: every victim the run
+    had not reached yet is absent from `hits`, so it is scored as an attack
+    that MISSED rather than as an attack that never happened. Measured: the
+    20% run, present only as partials covering 1,625 of 2,836 victims, came
+    out at 2.15% — below the 5% rate — purely because 1,211 victims were
+    counted as misses. All six batches must therefore be final.
+    """
     if not os.path.exists(os.path.join(ROOT, "data", graph_dir, "train.txt")):
         return False
-    return any(
-        os.path.exists(os.path.join(ROOT, "deanon_results", f"{prefix}{i}{suffix}"))
-        for i in range(1, 7) for suffix in (".json", ".partial.json")
+    return all(
+        os.path.exists(os.path.join(ROOT, "deanon_results", f"{prefix}{i}.json"))
+        for i in range(1, 7)
     )
 
 
@@ -283,7 +293,11 @@ def main():
     with io.open(os.path.join(OUT, "data", "anonymity_strata.csv"), "w",
                  encoding="utf-8", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["bucket", "n_victims", "hit_rate_5pct", "hit_rate_10pct"])
+        # One rate column per run actually found on disk. Hard-coding two
+        # names here left the third (15%) column unlabelled once that run
+        # landed, so csv.DictReader silently swallowed it under the key None.
+        w.writerow(["bucket", "n_victims"]
+                   + [f"hit_rate_{lbl}" for lbl, _r, _g, _p in runs])
         for lo, hi, label in buckets:
             grp = [m for m, k in mid_min_k.items() if lo <= k <= hi]
             out = [label, len(grp)]
@@ -297,7 +311,9 @@ def main():
     with io.open(os.path.join(OUT, "data", "per_relation.csv"), "w",
                  encoding="utf-8", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["relation", "n_victims", "hit_rate_5pct", "hit_rate_10pct"])
+        # Same per-run header as anonymity_strata.csv above.
+        w.writerow(["relation", "n_victims"]
+                   + [f"hit_rate_{lbl}" for lbl, _r, _g, _p in runs])
         for rel in SENSITIVE_POSITION:
             grp = [m for m in victim_mids if rel in mid_to_rels.get(m, ())]
             if not grp:

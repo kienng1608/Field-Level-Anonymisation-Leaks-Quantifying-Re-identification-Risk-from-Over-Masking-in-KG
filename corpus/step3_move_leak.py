@@ -108,6 +108,12 @@ def main():
                          "rate's leak is a subset of this one's) rather than an "
                          "independent draw, which isolates 'more leakage' from "
                          "'different edges leaked'.")
+    ap.add_argument("--fixed_k", type=int, default=None,
+                    help="Move exactly this many non-sensitive edges per victim "
+                         "instead of a fraction of its degree, so realised leak no "
+                         "longer scales with connectivity. Overrides --rate. A "
+                         "mirror pair still moves as one 2-edge unit, so a victim "
+                         "can end one edge above k.")
     args = ap.parse_args()
 
     train_path = os.path.join(args.input_dir, "train.txt")
@@ -220,7 +226,10 @@ def main():
         # edges, so the leak rate's meaning (% of a victim's non-sensitive
         # edges) is unchanged by grouping.
         n_edges = sum(len(u) for u in units)
-        k_edges = int(round(n_edges * args.rate))
+        if args.fixed_k is not None:
+            k_edges = min(args.fixed_k, n_edges)
+        else:
+            k_edges = int(round(n_edges * args.rate))
         # Edges this victim already carries from --extend_from count toward the
         # quota, so only the shortfall is sampled here.
         already = sum(1 for u in units for i in u if i in inherited)

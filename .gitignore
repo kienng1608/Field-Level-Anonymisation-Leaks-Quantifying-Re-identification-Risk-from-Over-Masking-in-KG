@@ -24,6 +24,7 @@ corpora/
 # Attack outputs — may contain solved targets
 # ============================================================
 results/
+deanon_results/
 logs/
 outputs/
 *.jsonl
