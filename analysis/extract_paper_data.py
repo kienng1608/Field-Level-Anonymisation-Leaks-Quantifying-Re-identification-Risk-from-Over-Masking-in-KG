@@ -17,7 +17,7 @@ Outputs (all under paper_handoff/):
   cases/*.txt                  full transcripts of the illustrative cases
 
 Usage:
-  python codes/extract_paper_data.py
+  python analysis/extract_paper_data.py
 """
 import collections
 import csv

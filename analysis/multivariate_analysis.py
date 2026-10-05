@@ -33,9 +33,9 @@ rates present they use the two lowest and say so, while (c4) covers all of them,
 so the numbers a two-rate run produced stay reproducible.
 
 Usage:
-  python codes/multivariate_analysis.py                      # every rate in the CSV
-  python codes/multivariate_analysis.py --rates 0.05,0.1     # the paper's pair
-  python codes/multivariate_analysis.py --out somewhere.json # do not overwrite
+  python analysis/multivariate_analysis.py                      # every rate in the CSV
+  python analysis/multivariate_analysis.py --rates 0.05,0.1     # the paper's pair
+  python analysis/multivariate_analysis.py --out somewhere.json # do not overwrite
 """
 import collections
 import io

@@ -9,7 +9,7 @@ C4  no real-world personal name is used as a link anywhere in A-D
 Every derivation the checker flags is then read by hand; the checker is a
 screen, not the audit itself.
 
-Usage:  python codes/audit_15pct_hits.py
+Usage:  python analysis/audit_15pct_hits.py
 Writes: paper_handoff/data/audit15_results.json
 """
 import collections

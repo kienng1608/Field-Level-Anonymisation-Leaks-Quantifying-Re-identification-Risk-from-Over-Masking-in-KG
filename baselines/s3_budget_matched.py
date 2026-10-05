@@ -28,8 +28,8 @@ entirely.)
 --scope round1  the initial allocation only, for reference.
 
 Usage:
-  python codes/s3_budget_matched.py --rate 15
-  python codes/s3_budget_matched.py --rate 15 --scope round1
+  python baselines/s3_budget_matched.py --rate 15
+  python baselines/s3_budget_matched.py --rate 15 --scope round1
 """
 import argparse
 import collections

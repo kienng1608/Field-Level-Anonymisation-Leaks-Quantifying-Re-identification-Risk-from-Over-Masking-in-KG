@@ -14,9 +14,9 @@ Evaluates on all 2,836 victims for FB15k-237 at 5%, 10%, 15% error rates.
 Outputs Top-1, Top-3, Top-5 accuracy, MRR, and latency.
 
 Usage:
-  python codes/run_non_llm_baselines.py --rate 05
-  python codes/run_non_llm_baselines.py --all_rates
-  python codes/run_non_llm_baselines.py --test --n_samples 50
+  python baselines/run_non_llm_baselines.py --rate 05
+  python baselines/run_non_llm_baselines.py --all_rates
+  python baselines/run_non_llm_baselines.py --test --n_samples 50
 """
 
 import argparse

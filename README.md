@@ -101,6 +101,34 @@ scores it as a miss.
 realised leak from connectivity, and `analysis/audit_15pct_hits.py` applies the
 four audit criteria to every successful attack.
 
+### Analyses behind the remaining results
+
+Each script writes its output to `deanon_results/analysis/`, which is not
+tracked. The fixed-leak corpora are built first:
+
+```bash
+for k in 1 2 3; do
+  python corpus/step3_move_leak.py --input_dir data/FB15k-237-id-masked \
+         --output_dir data/FB15k-237-id-fixk$k --fixed_k $k
+done
+```
+
+| Result | Script |
+|---|---|
+| Connectivity at a fixed leak (Table IV) | `analysis/fixed_leak.py` |
+| Precision of the most confident answers (Sect. V-B) | `analysis/precision_coverage.py` |
+| Every attacker on the agent's own evidence | `analysis/equal_evidence_score.py --rate 05/10/15`, then `analysis/equal_evidence_table.py` |
+| Precision on equal evidence, split by whether the true code was retrieved | `analysis/equal_evidence_reach.py` (uses `equal_evidence_precision.py`) |
+| The few hits before any labelling error, and the empty-pool share | `analysis/zero_leak_hits.py` |
+| Why Personalized PageRank fails: first-step mass | `analysis/ppr_first_step.py` (500-subject sample) |
+| A neighbour-exclusion rule applied to every index | `analysis/neighbour_exclusion.py` |
+| Weighted Anchor's two factors separated | `analysis/weighted_anchor_factors.py` |
+| Hits resting on a node created by merging same-named entities | `analysis/label_merge_hits.py` |
+| Rebuilding the release without the net-worth relation | `analysis/net_worth_sensitivity.py` |
+
+The equal-evidence scripts replay the stored agent runs, so they need the agent's
+results in `deanon_results/`.
+
 Runs use `gemini-2.5-flash`, closed-book, at temperature 0, with corpus seed
 4242. Rates from a language model will not reproduce exactly.
 
