@@ -216,7 +216,3 @@ If you use this project in your research, please cite the accompanying paper:
 }
 ```
 
-## Contact
-
-Posts and Telecommunications Institute of Technology, Ha Noi, Vietnam.
-For questions or collaborations, contact Cong Tran (congtt@ptit.edu.vn).
